@@ -20,8 +20,8 @@ class UserAdmin(ImportExportModelAdmin):
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
         (('Personal info'), {'fields': ('first_name', 'last_name','avatar')}),
-        (('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser','is_campuspartner', 'is_communitypartner',
-                                       'groups', 'user_permissions')}),
+        (('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser','is_campuspartner', 'is_communitypartner', 'university',
+                                       'groups', 'user_permissions', )}),
         (('Important dates'), {'fields': ('last_login', 'date_joined')}),
     )
     add_fieldsets = (

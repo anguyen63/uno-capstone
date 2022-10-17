@@ -2,7 +2,6 @@ from decimal import *
 from django.db import connection
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from numpy import shape
-
 import home
 from django.views.decorators.csrf import csrf_exempt
 from home.decorators import communitypartner_required, campuspartner_required, admin_required
@@ -50,7 +49,6 @@ def communitypartnerhome(request):
     #    if usertype.is_communitypartner == True:
     return render(request, 'community_partner_home.html',
                   {'communitypartnerhome': communitypartnerhome, 'usertype': usertype})
-
 
 @login_required()
 def myProjects(request):
@@ -285,7 +283,6 @@ def createProject(request):
         formset2 = proj_comm_part(request.POST or None, prefix='community')
         formset3 = proj_campus_part(request.POST or None, prefix='campus')
         if project.is_valid() and formset.is_valid() and course.is_valid() and formset2.is_valid() and formset3.is_valid() and categoryformset.is_valid():
-
             if request.POST.get('k12_flag'):
                 project.k12_flag = True
             else:
@@ -651,7 +648,7 @@ def showAllProjects(request):
     data_definition = DataDefinition.objects.all()
     missions = ProjectMissionFilter(request.GET, queryset=ProjectMission.objects.filter(mission_type='Primary'))
     status_draft = Status.objects.filter(name='Drafts')
-    project_filter = ProjectFilter(request.GET, queryset=Project.objects.all().exclude(status__in=status_draft))
+    project_filter = ProjectFilter(request.GET, queryset=Project.objects.filter(university=request.user.university).exclude(status__in=status_draft))
     communityPartners = communityPartnerFilter(request.GET, queryset=CommunityPartner.objects.all())
     campusPartners = CampusFilter(request.GET, queryset=CampusPartner.objects.all())
     # campus_filtered_ids = campusPartners.qs.values_list('id', flat=True)

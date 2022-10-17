@@ -11,6 +11,7 @@ urlpatterns = [
     path('login-Page/', views.user_login, name='loginPage'),
     path('', views.index),
     path('attrs/', views.attrs),
-    path('metadata/', views.metadata)
+    path('metadata/', views.metadata),
+    path('admin', views.admin),
 
 ]

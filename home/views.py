@@ -113,77 +113,58 @@ def resourceData(request):
     return {'resources': resources}
 
 def home(request):
-    return render(request, 'home/communityPartner.html',
-                  {'home': home})
+    return render(request, 'home/communityPartner.html',)
 
 
 def MapHome(request):
-    return render(request, 'home/Map_Home.html',
-                  {'MapHome': MapHome})
+    return render(request, 'home/Map_Home.html',)
 
 def thanks(request):
     return render(request, 'home/thanks.html')
 
-
 def partners(request):
     data_definition = DataDefinition.objects.all()
     return render(request, 'home/partners.html',
-                  {'partners': partners,
-                   'data_definition': data_definition})
+                  {'data_definition': data_definition})
 
 
 def map(request):
-    return render(request, 'home/Countymap.html',
-                  {'map': map})
+    return render(request, 'home/Countymap.html',)
 
 
 def districtmap(request):
-    return render(request, 'home/Districtmap.html',
-                  {'districtmap': districtmap})
+    return render(request, 'home/Districtmap.html',)
 
 
 def projectmap(request):
-    return render(request, 'home/projectmap.html',
-                  {'projectmap': projectmap})
+    return render(request, 'home/projectmap.html',)
 
 
 def cpipage(request):
-    return render(request, 'home/CpiHome.html',
-                  {'cpipage': cpipage})
+    return render(request, 'home/CpiHome.html',)
 
 
 @login_required()
 def campusHome(request):
-    return render(request, 'home/Campus_Home.html',
-                  {'campusHome': campusHome})
+    return render(request, 'home/Campus_Home.html',)
 
 
 @login_required()
 def CommunityHome(request):
-    return render(request, 'home/Community_Home.html',
-                  {'CommunityHome': CommunityHome})
-
-
-@login_required()
-def AdminHome(request):
-    user = authenticate(request)
-
-    return render(request, 'home/admin_frame.html',
-                  {'AdminHome': AdminHome})
+    return render(request, 'home/Community_Home.html',)
 
 
 @login_required()
 def Adminframe(request):
-    return render(request, 'home/admin_frame.html',
-                  {'Adminframe': Adminframe})
+    return render(request, 'home/admin_frame.html',)
 
 
 def signup(request):
-    return render(request, 'home/registration/signuporganization.html', {'signup': signup})
+    return render(request, 'home/registration/signuporganization.html',)
 
 
 def signupuser(request):
-    return render(request, 'home/registration/signupuser.html', {'signupuser': signupuser})
+    return render(request, 'home/registration/signupuser.html',)
 
 def registerCampusPartnerUser(request):
     data = []
@@ -2327,6 +2308,5 @@ def uploadProjectSub(request,pk):
     print("read", str(total_project_count) + " projects ")
     
     cursor.close()
-    return render(request, 'home/thanks.html',
-                  {'thank': thanks})
+    return render(request, 'home/thanks.html',)
 

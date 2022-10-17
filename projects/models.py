@@ -3,7 +3,8 @@ from django.db import models
 from simple_history.models import HistoricalRecords
 from crum import get_current_user
 from django.contrib.postgres.fields import ArrayField
-from UnoCPI import  settings
+from UnoCPI import settings
+from university import models as university_models
 
 class Project (models.Model):
     project_choices = (
@@ -53,6 +54,8 @@ class Project (models.Model):
     other_sub_category = ArrayField(base_field=models.CharField(max_length=100), size=10, blank=True, null=True)
     other_activity_type = ArrayField(base_field=models.CharField(max_length=100), size=10, blank=True, null=True)
     recursive_project = models.BooleanField(default=False)
+    university = models.ForeignKey(university_models.University, null=True, blank=True, on_delete=models.CASCADE,
+                                   default=1)
     history = HistoricalRecords()
 
     def created(self):

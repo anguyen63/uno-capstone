@@ -1,8 +1,6 @@
 from django.contrib.auth.base_user import BaseUserManager
 from django.db import models
-from django.core.validators import MinLengthValidator
-from django.core.validators import MaxLengthValidator
-from django.core.validators import RegexValidator
+from university import models as university_models
 from django.contrib.auth.models import AbstractUser
 from wagtail.core.models import Page
 from wagtail.core.fields import RichTextField, StreamField
@@ -317,6 +315,7 @@ class User(AbstractUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
     objects = UserManager()
+    university = models.ForeignKey(university_models.University, null=True, blank=True, on_delete=models.CASCADE, default=1)
     # history = HistoricalRecords()
 
 

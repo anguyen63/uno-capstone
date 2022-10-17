@@ -203,8 +203,8 @@ LOGIN_URL = reverse_lazy('account:loginPage')
 
 
 ## Sample Import files download source location, DONOT DELETE
-## MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-## MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
 
 ##
 EMAIL_HOST = os.environ.get('MAILGUN_SMTP_SERVER')
@@ -223,7 +223,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 #STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 # Internationalization
 
-WAGTAIL_SITE_NAME = 'UNO-CPI'
+WAGTAIL_SITE_NAME = 'UNO-CEPI'
 
 
 GOOGLE_MAPS_API_KEY = os.environ.get('GOOGLE_MAPS_API_KEY')
