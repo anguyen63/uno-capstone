@@ -3,7 +3,7 @@ from django.db import models
 from simple_history.models import HistoricalRecords
 from crum import get_current_user
 from django.contrib.postgres.fields import ArrayField
-from UnoCPI import settings
+from UnoCPI import  settings
 from university import models as university_models
 
 class Project (models.Model):
