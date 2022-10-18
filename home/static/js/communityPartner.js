@@ -490,4 +490,6 @@ $("#reset").click(function () {
     }
     $('#selectCampus').html(select3);
     resetPartnerMarkers(communityData)
+    filterMarkers();
+    $('#totalnumber').html(getClusterSize());
 });
