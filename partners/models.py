@@ -1,10 +1,8 @@
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.db import models
-from projects.models import AcademicYear
 from django.utils import timezone
 from simple_history.models import HistoricalRecords
-
 
 class CommunityPartner(models.Model):
     TRUE_FALSE_CHOICES = (
@@ -106,10 +104,10 @@ class CecPartActiveYrs(models.Model):
     SEMESTER = [
         ("", "----------"), ("Fall", "Fall"), ("Spring", "Spring"), ("Summer", "Summer")]
     start_semester = models.CharField(max_length=20, choices=SEMESTER, blank=True)
-    start_acad_year = models.ForeignKey(AcademicYear, on_delete=models.CASCADE, null=False,
+    start_acad_year = models.ForeignKey('projects.AcademicYear', on_delete=models.CASCADE, null=False,
                                         related_name="cec_academic_year1")
     end_semester = models.CharField(max_length=20, choices=SEMESTER, blank=True)
-    end_acad_year = models.ForeignKey(AcademicYear, on_delete=models.CASCADE, null=True, blank=True,
+    end_acad_year = models.ForeignKey('projects.AcademicYear', on_delete=models.CASCADE, null=True, blank=True,
                                       related_name="cec_academic_year2")
     comm_partner = models.ForeignKey(CommunityPartner, on_delete=models.CASCADE, null=True, blank=True)
     camp_partner = models.ForeignKey(CampusPartner, on_delete=models.CASCADE, null=True, blank=True)

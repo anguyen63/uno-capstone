@@ -119,7 +119,8 @@ class ProjectForm2(ModelForm):
                   'total_uno_hours','k12_flag','total_k12_students','total_k12_hours',
                     'total_uno_faculty','total_other_community_members','start_date','end_date' ,'other_details','outcomes',
                     'status','total_economic_impact', 'address_line1' ,'country' ,'city','zip', 'state','latitude',
-                    'longitude','academic_year', 'end_academic_year', 'end_semester','other_sub_category','campus_lead_staff','project_type','other_activity_type')
+                    'longitude','academic_year', 'end_academic_year', 'end_semester','other_sub_category','campus_lead_staff',
+                  'project_type','other_activity_type')
         widgets = {
             'start_date': DateInput(),
             'end_date': DateInput(),

@@ -5,7 +5,6 @@ from django.db.transaction import commit
 import re
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.forms import UserCreationForm
-# importing models in forms.py
 from university.models import *
 from .models import User
 from partners.models import CampusPartner, CommunityPartner,CommunityPartnerUser,CommunityPartnerMission, \
@@ -159,8 +158,6 @@ class CommunityuserForm(forms.ModelForm):
         if any(char in special_characters for char in lastname):
             raise forms.ValidationError("Last name should not have special characters")
         return lastname
-
-
 
     def clean_password2(self):
         pas = self.cleaned_data['password']
