@@ -64,7 +64,6 @@ class CecPartChoiceForm(forms.ModelForm):
 
 
 class ProjectForm(forms.ModelForm):
-
     class Meta:
         model = Project
         fields = ('project_name',)
@@ -74,9 +73,7 @@ class ProjectForm(forms.ModelForm):
         widgets = {
             #'name': forms.Field
             'project_name': forms.Textarea(attrs={'readonly': True,'rows':1, 'cols':80}),
-
         }
-
 class missionform(forms.ModelForm):
 
     class Meta:
@@ -84,7 +81,6 @@ class missionform(forms.ModelForm):
         fields = ('mission_type','mission')
 
 class ProjectCommunityPartnerForm(forms.ModelForm):
-
     class Meta:
         model = ProjectCommunityPartner
         fields = ('project_name','total_hours','total_people','wages')
@@ -112,15 +108,14 @@ class ProjectForm2(ModelForm):
     semester = forms.ChoiceField(required=False, choices=SEMESTER)
     end_semester = forms.ChoiceField(required=False, choices=SEMESTER)
     k12_flag = forms.BooleanField(required=False)
-
     class Meta:
         model = Project
         fields = ('project_name','engagement_type','activity_type','facilitator','description','semester','total_uno_students',
                   'total_uno_hours','k12_flag','total_k12_students','total_k12_hours',
-                    'total_uno_faculty','total_other_community_members','start_date','end_date' ,'other_details','outcomes',
-                    'status','total_economic_impact', 'address_line1' ,'country' ,'city','zip', 'state','latitude',
-                    'longitude','academic_year', 'end_academic_year', 'end_semester','other_sub_category','campus_lead_staff',
-                  'project_type','other_activity_type')
+                  'total_uno_faculty','total_other_community_members','start_date','end_date' ,'other_details','outcomes',
+                  'status','total_economic_impact', 'address_line1' ,'country' ,'city','zip', 'state','latitude',
+                  'longitude','academic_year', 'end_academic_year', 'end_semester','other_sub_category','campus_lead_staff',
+                  'project_type','other_activity_type', 'mission_area', 'community_partner', 'campus_partner')
         widgets = {
             'start_date': DateInput(),
             'end_date': DateInput(),
@@ -146,7 +141,6 @@ class ProjectForm2(ModelForm):
             'semester': 'Start semester',
             'zip': 'Zip or Postal Code',
             'state': 'State or Province',
-
         }
 
 
@@ -239,7 +233,7 @@ class ProjectForm2(ModelForm):
 
 class ProjectFormAdd(ModelForm):
     SEMESTER = [
-    ("", "----------") ,  ("Fall", "Fall"), ("Spring", "Spring"), ("Summer", "Summer")]
+        ("", "----------") ,  ("Fall", "Fall"), ("Spring", "Spring"), ("Summer", "Summer")]
     address_line1= forms.CharField(required=False)
     country = forms.CharField(required=False)
     city = forms.CharField(required=False)
@@ -251,9 +245,11 @@ class ProjectFormAdd(ModelForm):
     class Meta:
         model = Project
         fields = ('project_name','engagement_type','activity_type','project_type','description','semester',
-                    'status', 'address_line1','country','city', 'state','zip','latitude',
-                    'longitude','academic_year', 'total_uno_students', 'total_uno_hours','k12_flag','total_k12_students','total_k12_hours',
-                  'end_semester', 'other_sub_category', 'end_academic_year','campus_lead_staff','other_activity_type','total_uno_faculty','total_other_community_members')
+                  'status', 'address_line1','country','city', 'state','zip','latitude',
+                  'longitude','academic_year', 'total_uno_students', 'total_uno_hours','k12_flag',
+                  'total_k12_students','total_k12_hours','end_semester', 'other_sub_category',
+                  'end_academic_year','campus_lead_staff','other_activity_type','total_uno_faculty',
+                  'total_other_community_members')
         widgets = {
             'start_date': DateInput(),
             'end_date': DateInput()
@@ -455,7 +451,7 @@ class ProjectMissionEditFormset(forms.ModelForm):
         fields = ('mission',)
         labels = {
             'mission': (' '),
-                    }
+        }
 
 class projectfocusarea(forms.ModelForm):
     class Meta:
@@ -471,7 +467,7 @@ class ProjectMissionFormset(forms.ModelForm):
         fields = ( 'mission',)
         labels = {
             'mission': (' '),
-                    }
+        }
 
 
 class ScndProjectMissionFormset(forms.ModelForm):
@@ -490,8 +486,8 @@ class ProjectSearchForm(forms.ModelForm):
         labels = {
             'project_name':('Project Name'),
 
-         }
-     # def __init__(self, *args, **kwargs):
+        }
+    # def __init__(self, *args, **kwargs):
     #     super(ProjectSearchForm, self).__init__(*args, **kwargs)
     #     self.fields['project_name'].widget = forms.TextInput(attrs={
     #         'id': 'id_project_name'})

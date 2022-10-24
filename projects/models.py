@@ -55,7 +55,7 @@ class Project (models.Model):
     recursive_project = models.BooleanField(default=False)
     university = models.ForeignKey('university.University', null=True, blank=True, on_delete=models.CASCADE,
                                    default=1)
-    mission_area = models.ManyToManyField('home.MissionArea')
+    mission_area = models.ForeignKey('home.MissionArea', on_delete=models.CASCADE, default=1)
     community_partner = models.ManyToManyField('partners.CommunityPartner')
     campus_partner = models.ManyToManyField('partners.CampusPartner')
     history = HistoricalRecords()

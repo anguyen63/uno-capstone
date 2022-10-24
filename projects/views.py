@@ -2,6 +2,7 @@ from decimal import *
 from django.db import connection
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from numpy import shape
+
 import home
 from django.views.decorators.csrf import csrf_exempt
 from home.decorators import communitypartner_required, campuspartner_required, admin_required
@@ -49,6 +50,7 @@ def communitypartnerhome(request):
     #    if usertype.is_communitypartner == True:
     return render(request, 'community_partner_home.html',
                   {'communitypartnerhome': communitypartnerhome, 'usertype': usertype})
+
 
 @login_required()
 def myProjects(request):
@@ -283,6 +285,7 @@ def createProject(request):
         formset2 = proj_comm_part(request.POST or None, prefix='community')
         formset3 = proj_campus_part(request.POST or None, prefix='campus')
         if project.is_valid() and formset.is_valid() and course.is_valid() and formset2.is_valid() and formset3.is_valid() and categoryformset.is_valid():
+
             if request.POST.get('k12_flag'):
                 project.k12_flag = True
             else:
@@ -648,7 +651,7 @@ def showAllProjects(request):
     data_definition = DataDefinition.objects.all()
     missions = ProjectMissionFilter(request.GET, queryset=ProjectMission.objects.filter(mission_type='Primary'))
     status_draft = Status.objects.filter(name='Drafts')
-    project_filter = ProjectFilter(request.GET, queryset=Project.objects.filter(university=request.user.university).exclude(status__in=status_draft))
+    project_filter = ProjectFilter(request.GET, queryset=Project.objects.all().exclude(status__in=status_draft))
     communityPartners = communityPartnerFilter(request.GET, queryset=CommunityPartner.objects.all())
     campusPartners = CampusFilter(request.GET, queryset=CampusPartner.objects.all())
     # campus_filtered_ids = campusPartners.qs.values_list('id', flat=True)
@@ -2760,3 +2763,231 @@ def submit_project_done(request):
 
 def adminsubmit_project_done(request):
     return render(request, 'projects/adminconfirm.html')
+
+
+
+
+def showallprojectsfixed(request):
+    selectedprojectId = request.GET.get('proj_id_list', None)
+    data_definition = DataDefinition.objects.all()
+    missions = ProjectMissionFilter(request.GET, queryset=ProjectMission.objects.filter(mission_type='Primary'))
+    status_draft = Status.objects.filter(name='Drafts')
+    project_filter = ProjectFilter(request.GET, queryset=Project.objects.all().exclude(status__in=status_draft))
+    communityPartners = communityPartnerFilter(request.GET, queryset=CommunityPartner.objects.all())
+    campusPartners = CampusFilter(request.GET, queryset=CampusPartner.objects.all())
+    # campus_filtered_ids = campusPartners.qs.values_list('id', flat=True)
+    # campus_filtered_ids = [campus.id for campus in campusPartners.qs]
+    # campus_project_filter = ProjectCampusFilter(request.GET, queryset=ProjectCampusPartner.objects.filter(
+    #     campus_partner_id__in=campus_filtered_ids))
+    projects_list = []
+    cursor = connection.cursor()
+    k12_selection = request.GET.get('k12_flag', None)
+    # k12_init_selection = "All"
+    # if k12_selection is None:
+    # k12_selection = k12_init_selection
+
+    k12_choices = K12ChoiceForm(initial={'k12_choice': k12_selection})
+
+    engagement_type_filter = request.GET.get('engagement_type', None)
+    if engagement_type_filter is None or engagement_type_filter == "All" or engagement_type_filter == '':
+        eng_type_cond = '%'
+    else:
+        eng_type_cond = engagement_type_filter
+
+    mission_type_filter = request.GET.get('mission', None)
+    if mission_type_filter is None or mission_type_filter == "All" or mission_type_filter == '':
+        mission_type_cond = '%'
+    else:
+        mission_type_cond = mission_type_filter
+
+    community_type_filter = request.GET.get('community_type', None)
+    if community_type_filter is None or community_type_filter == "All" or community_type_filter == '':
+        community_type_cond = '%'
+    else:
+        community_type_cond = community_type_filter
+
+    campus_partner_filter = request.GET.get('campus_partner', None)
+    if campus_partner_filter is None or campus_partner_filter == "All" or campus_partner_filter == '':
+        campus_partner_cond = '%'
+        campus_id = 0
+    else:
+        campus_partner_cond = campus_partner_filter
+        campus_id = int(campus_partner_filter)
+
+    college_unit_filter = request.GET.get('college_name', None)
+    if college_unit_filter is None or college_unit_filter == "All" or college_unit_filter == '':
+        college_unit_cond = '%'
+        campus_filter_qs = CampusPartner.objects.all()
+    else:
+        college_unit_cond = college_unit_filter
+        campus_filter_qs = CampusPartner.objects.filter(college_name_id=college_unit_cond)
+    campus_filter = [{'name': m.name, 'id': m.id} for m in campus_filter_qs]
+
+    academic_year_filter = request.GET.get('academic_year', None)
+    acad_years = AcademicYear.objects.all()
+    yrs = []
+    month = datetime.datetime.now().month
+    year = datetime.datetime.now().year
+    if month > 7:
+        a_year = str(year - 1) + "-" + str(year)[-2:]
+    else:
+        a_year = str(year - 2) + "-" + str(year - 1)[-2:]
+
+    for e in acad_years:
+        yrs.append(e.id)
+    try:
+        acad_year = AcademicYear.objects.get(academic_year=a_year).id
+        default_yr_id = acad_year
+    except AcademicYear.DoesNotExist:
+        default_yr_id = max(yrs)
+    max_yr_id = max(yrs)
+
+    if academic_year_filter is None or academic_year_filter == '':
+        academic_start_year_cond = int(default_yr_id)
+        academic_end_year_cond = int(default_yr_id)
+
+    elif academic_year_filter == "All":
+        academic_start_year_cond = int(max_yr_id)
+        academic_end_year_cond = 1
+    else:
+        academic_start_year_cond = int(academic_year_filter)
+        academic_end_year_cond = int(academic_year_filter)
+
+    K12_filter = request.GET.get('k12_flag', None)
+    if K12_filter is None or K12_filter == "All" or K12_filter == '':
+        K12_filter_cond = '%'
+
+    elif K12_filter == 'Yes':
+        K12_filter_cond = 't'
+
+    elif K12_filter == 'No':
+        K12_filter_cond = 'f'
+
+    cec_part_init_selection = "All"
+    cec_part_selection = request.GET.get('weitz_cec_part', None)
+    if cec_part_selection is None or cec_part_selection == "All" or cec_part_selection == '':
+        # cec_part_selection = cec_part_init_selection
+        cec_comm_part_cond = '%'
+        cec_camp_part_cond = '%'
+
+    elif cec_part_selection == "CURR_COMM":
+        cec_comm_part_cond = 'Current'
+        cec_camp_part_cond = '%'
+
+    elif cec_part_selection == "FORMER_COMM":
+        cec_comm_part_cond = 'Former'
+        cec_camp_part_cond = '%'
+
+    elif cec_part_selection == "FORMER_CAMP":
+        cec_comm_part_cond = '%'
+        cec_camp_part_cond = 'Former'
+
+    elif cec_part_selection == "CURR_CAMP":
+        cec_comm_part_cond = '%'
+        cec_camp_part_cond = 'Current'
+
+    cursor = connection.cursor()
+    project_start_query = "select distinct  p.project_name \
+                                    , array_agg(distinct hm.mission_name) mission_area \
+                                    , array_agg(distinct pc.name) CommPartners \
+                                    , array_agg(distinct c.name) CampPartners \
+                                    , array_agg(distinct e.name) engagement_type \
+                                    , pa.academic_year \
+                                    , p.semester \
+                                    , status.name status \
+                                    , case when p.start_date is null then 'None' end start_date \
+                                    , case when p.end_date is null then 'None' end end_date \
+                                    , p.outcomes \
+                                    , p.total_uno_students \
+                                    , p.total_uno_hours \
+                                    , p.total_uno_faculty \
+                                    , p.total_k12_students \
+                                    , p.total_k12_hours \
+                                    , p.total_other_community_members \
+                                    , a.name activity_type \
+                                    , p.description \
+                                    , p.project_type project_type \
+                                    , p.end_semester end_semester \
+                                    , ea.academic_year end_academic_year \
+                                    , array_agg(distinct s.sub_category) sub_category \
+                                    , p.campus_lead_staff campus_lead_staff \
+                                    , hm.mission_image_url mission_image \
+                                    , p.other_activity_type act_type \
+                                    , p.other_sub_category other_subCat \
+                                    , array_agg(s.sub_category_tags) sub_tags \
+                                    from projects_project p \
+                                    join projects_projectmission m on p.id = m.project_name_id and lower(m.mission_type) = 'primary' \
+                                    left join home_missionarea hm on hm.id = m.mission_id \
+                                    left join projects_engagementtype e on e.id = p.engagement_type_id \
+                                    left join projects_projectcommunitypartner pp on p.id = pp.project_name_id \
+                                    left join partners_communitypartner pc on pp.community_partner_id = pc.id \
+                                    left join projects_projectcampuspartner pp2 on p.id = pp2.project_name_id \
+                                    left join partners_campuspartner c on pp2.campus_partner_id = c.id \
+                                    left join projects_academicyear pa on p.academic_year_id = pa.id \
+                                    left join projects_academicyear ea on p.end_academic_year_id = ea.id \
+                                    left join projects_activitytype a on p.activity_type_id = a.id \
+                                    left join projects_projectsubcategory psub on psub.project_name_id = p.id \
+                                    left join projects_subcategory s on psub.sub_category_id = s.id \
+                                    left join projects_status status on status.id = p.status_id  \
+                                    where status.name !='Drafts' and \
+                                    ((p.academic_year_id <= " + str(academic_start_year_cond) + ") AND \
+                                            (COALESCE(p.end_academic_year_id, p.academic_year_id) >= " + str(
+        academic_end_year_cond) + ")) "
+    clause_query = ""
+    if eng_type_cond != '%':
+        clause_query += " and e.id::text like '" + eng_type_cond + "'"
+
+    if mission_type_cond != '%':
+        clause_query += " and m.mission_id::text like '" + mission_type_cond + "'"
+
+    if campus_partner_cond != '%':
+        clause_query += " and pp2.campus_partner_id::text like '" + campus_partner_cond + "'"
+
+    if college_unit_cond != '%':
+        clause_query += " and c.college_name_id::text like '" + college_unit_cond + "' "
+
+    if K12_filter_cond != '%':
+        clause_query += " and p.k12_flag ='" + K12_filter_cond + "'"
+
+    if cec_camp_part_cond != '%':
+        clause_query += " and c.cec_partner_status_id in (select id from partners_cecpartnerstatus where name like '" + cec_camp_part_cond + "')"
+
+    if community_type_cond != '%':
+        clause_query += " and pc.community_type_id::text like '" + community_type_cond + "'"
+
+    if cec_comm_part_cond != '%':
+        clause_query += " and  pc.cec_partner_status_id in  (select id from partners_cecpartnerstatus where name like '" + cec_comm_part_cond + "')"
+
+    project_end_query = project_start_query + clause_query + " group by p.project_name \
+                                      , pa.academic_year \
+                                      , p.semester \
+                                      , status.name \
+                                      , p.start_date \
+                                      , p.end_date \
+                                      , p.outcomes \
+                                      , p.total_uno_students \
+                                      , p.total_uno_hours \
+                                      , p.total_uno_faculty \
+                                      , p.total_k12_students \
+                                      , p.total_k12_hours \
+                                      , p.total_other_community_members \
+                                      , a.name \
+                                      , p.description \
+                                      , project_type \
+                                      , end_semester \
+                                      , end_academic_year \
+                                      , campus_lead_staff \
+                                      , mission_image \
+                                      , act_type \
+                                      , other_subCat \
+                                      order by pa.academic_year desc; "
+
+    cec_part_choices = CecPartChoiceForm(initial={'cec_choice': cec_part_selection})
+
+    return render(request, 'projects/allProjects.html',
+                  {'project': Project.objects.all(), 'data_definition': data_definition, "missions": missions,
+                   "communityPartners": communityPartners,
+                   'campus_filter': campus_filter, 'college_filter': campusPartners, 'campus_id': campus_id,
+                   'k12_choices': k12_choices, 'k12_selection': k12_selection,
+                   'cec_part_choices': cec_part_choices, 'cec_part_selection': cec_part_selection,
+                   'projects': project_filter})

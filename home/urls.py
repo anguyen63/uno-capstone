@@ -5,7 +5,6 @@ from . import views
 from django.conf import settings
 
 urlpatterns = [
-
    path('campusHome',views.campusHome, name='campusHome'),
    path('CommunityHome',views.CommunityHome, name='CommunityHome'),
    path('partners/',views.partners,name='partners'),
